@@ -16,9 +16,9 @@ channel_id = "UCnz-ZXXER4jOvuED5trXfEA"
 youtube = build('youtube','v3',developerKey = api_key)
 
 def channeldata(ch):
-    api_key = "AIzaSyDXLPbL851GFxL-lkqMWtA8yUYABcNSu50"
+
     channel_id = ch
-    youtube = build('youtube','v3',developerKey = api_key)
+
     response = youtube.channels().list(
     id=channel_id,
     part='snippet,statistics,contentDetails')

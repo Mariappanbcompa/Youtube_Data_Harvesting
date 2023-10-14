@@ -1,9 +1,9 @@
 import streamlit as st
 import mysql.connector
 
-host = "sql12.freesqldatabase.com"
-user = "sql12653296"
-password = 'UgqEDaHSNX'
+host = "127.0.0.1"
+user = "root"
+password = '1234'
 
 try:
     mydb = mysql.connector.connect(

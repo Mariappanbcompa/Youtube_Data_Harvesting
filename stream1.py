@@ -11,7 +11,7 @@ records = db.YoutubeDB
 
 mycursor = ut.ts.mycursor
 mydb = ut.ts.mydb
-mycursor.execute("use youtubedb;")
+mycursor.execute("use sql12653296;")
 
 
 st.title('Youtube Data Harvesting Project ')
@@ -42,8 +42,8 @@ with tab1:
             st.write(f"Channel Name: {channel_name}")
             listchennel[channel_name] = channel_data
             st.write(ut.tab2.tab2_data(channel_data))
-            playls = ut.Playlist.playls(ch_id,youtube,m,client)
-            st.write(playls)
+            playlst = ut.Playlist.playls(ch_id,youtube,m)
+            st.write(playlst)
         except Exception as e:
             st.warning("Kindly Provide Correct Channel ID")
 
@@ -59,7 +59,7 @@ with tab1:
 
 with tab2:
 
-    mycursor.execute("select ChannelID from channel;")
+    mycursor.execute("select ChannelID from Channel;")
     result = mycursor.fetchall()
     sqlls = [x[0] for x in result]
     dd = records.find({}, {"_id": True, })
@@ -78,8 +78,7 @@ with tab2:
         if st.button("Load Data to MYSQLDB", type="primary"):
             try:
                 sqldata = tuple([int(x) if x.isnumeric() else x for x in data.values()])
-                mycursor.execute("use youtubedb;")
-                mycursor.execute(f"insert into channel values{sqldata}")
+                mycursor.execute(f"insert into Channel values{sqldata}")
                 mydb.commit()
                 st.success("Data loaded to SQLDB successfully! ")
             except ut.errors.DuplicateKeyError as e:
