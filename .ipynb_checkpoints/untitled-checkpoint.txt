@@ -1,0 +1,5 @@
+virtualenv stramlitenv
+stramlitenv
+cd C:\Users\HP\Desktop\Streamlit
+streamlitenv\scripts\activate
+streamlit run stream1.py
