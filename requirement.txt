@@ -1,0 +1,7 @@
+streamlit
+pandas
+numpy
+googleapiclient
+pymongo
+mysql
+math
