@@ -87,5 +87,7 @@ with tab2:
                 st.error(f"An error occurred: {ex}")
 
 
+with tab3:
+    st.write('summa')
 
 
