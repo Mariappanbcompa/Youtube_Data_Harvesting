@@ -2,7 +2,7 @@ import streamlit as st
 import util as ut
 
 
-m = ut.m
+dt = ut.dt
 youtube = ut.youtube
 client = ut.mconnect()
 
@@ -28,6 +28,7 @@ with st.sidebar:
     "UCa1s7iQUX6JBnkUrUkEknOg"
     "UCVLbzhxVTiTLiVKeGV7WEBg"
     "UCChmJrVa8kDg05JfCmxpLRw"
+    "UCVLbzhxVTiTLiVKeGV7WEBg"
 
 
 
@@ -42,14 +43,16 @@ with tab1:
             st.write(f"Channel Name: {channel_name}")
             listchennel[channel_name] = channel_data
             st.write(ut.tab2.tab2_data(channel_data))
-            playlst = ut.Playlist.playls(ch_id,youtube,m)
+            playlst = ut.Playlist.playls(ch_id,youtube)
             st.write(playlst)
+            videodlst = ut.Playlist.videodls(playlst['Playlist_id'],youtube,dt)
+            st.write(videodlst)
         except Exception as e:
             st.warning("Kindly Provide Correct Channel ID")
 
         if st.button("Load Data to MongoDB", type="primary"):
             try:
-                records.insert_one({"_id":ch_id,"data":channel_data,"Playlist":playls})
+                records.insert_one({"_id":ch_id,"data":channel_data,"Playlist":playlst})
                 st.success("Data loaded to MongoDB successfully! ")
             except ut.errors.DuplicateKeyError as e:
                 st.warning("Data with the same '_id' already exists in the MongoDB collection.")
