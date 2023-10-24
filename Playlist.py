@@ -1,4 +1,13 @@
 
+import re
+
+emoji_pattern = re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                           "]+", flags=re.UNICODE)
+
 
 def playls(ch_id,youtube):
     chid = ch_id
@@ -80,3 +89,40 @@ def videodls(plylist_ids,youtube,dt):
                    }
 
     return videoDetail
+
+
+def Comments(vids,youtube,remove_emojis):
+
+    comment_id, Video_id, Comment_text, Comment_author, Comment_published_date = [], [], [], [], []
+    for x in vids:
+        token = ' '
+        while token != None:
+            try:
+                token = reponse['nextPageToken']
+            except KeyError as e:
+                token = None
+
+            cmt_response = youtube.commentThreads().list(
+                part='snippet',
+                videoId=x,
+                maxResults=50,
+                pageToken=token
+            )
+            reponse = cmt_response.execute()
+            comment_id.extend([x['id'] for x in reponse['items']]),
+            Video_id.extend([x['snippet']['videoId'] for x in reponse['items']]),
+            Comment_text.extend(
+                [remove_emojis(x['snippet']['topLevelComment']['snippet']['textOriginal']) for x in reponse['items']]),
+            Comment_author.extend(
+                [x['snippet']['topLevelComment']['snippet']['authorDisplayName'] for x in reponse['items']]),
+            Comment_published_date.extend(
+                [x['snippet']['topLevelComment']['snippet']['publishedAt'] for x in reponse['items']])
+
+    cmt = {'comment_id': comment_id,
+           'Video_id': Video_id,
+           'Comment_text': Comment_text,
+           'Comment_author': Comment_author,
+           'Comment_published_date': Comment_published_date
+           }
+
+    return cmt

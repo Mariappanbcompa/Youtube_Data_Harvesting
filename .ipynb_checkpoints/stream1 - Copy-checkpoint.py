@@ -2,7 +2,6 @@ import streamlit as st
 import util as ut
 
 
-dt = ut.dt
 youtube = ut.youtube
 client = ut.mconnect()
 
@@ -11,7 +10,8 @@ records = db.YoutubeDB
 
 mycursor = ut.ts.mycursor
 mydb = ut.ts.mydb
-mycursor.execute("Use youtubedb")
+mycursor.execute("use youtubedb;")
+
 
 st.title('Youtube Data Harvesting Project ')
 
@@ -27,7 +27,6 @@ with st.sidebar:
     "UCa1s7iQUX6JBnkUrUkEknOg"
     "UCVLbzhxVTiTLiVKeGV7WEBg"
     "UCChmJrVa8kDg05JfCmxpLRw"
-    "UCVLbzhxVTiTLiVKeGV7WEBg"
 
 
 
@@ -40,18 +39,14 @@ with tab1:
         try:
             channel_name = channel_data['items'][0]['snippet']['title']
             st.write(f"Channel Name: {channel_name}")
+            st.write(channel_data)
             listchennel[channel_name] = channel_data
-            st.write(ut.tab2.tab2_data(channel_data))
-            playlst = ut.Playlist.playls(ch_id,youtube)
-            st.write(playlst)
-            videodlst = ut.Playlist.videodls(playlst['Playlist_id'],youtube,dt)
-            st.write(videodlst)
         except Exception as e:
             st.warning("Kindly Provide Correct Channel ID")
 
         if st.button("Load Data to MongoDB", type="primary"):
             try:
-                records.insert_one({"_id":ch_id,"data":channel_data,"Playlist":playlst})
+                records.insert_one({"_id":ch_id,"data":channel_data})
                 st.success("Data loaded to MongoDB successfully! ")
             except ut.errors.DuplicateKeyError as e:
                 st.warning("Data with the same '_id' already exists in the MongoDB collection.")
@@ -61,7 +56,7 @@ with tab1:
 
 with tab2:
 
-    mycursor.execute("select ChannelID from Channel;")
+    mycursor.execute("select ChannelID from channel;")
     result = mycursor.fetchall()
     sqlls = [x[0] for x in result]
     dd = records.find({}, {"_id": True, })
@@ -80,7 +75,8 @@ with tab2:
         if st.button("Load Data to MYSQLDB", type="primary"):
             try:
                 sqldata = tuple([int(x) if x.isnumeric() else x for x in data.values()])
-                mycursor.execute(f"insert into Channel values{sqldata}")
+                mycursor.execute("use youtubedb;")
+                mycursor.execute(f"insert into channel values{sqldata}")
                 mydb.commit()
                 st.success("Data loaded to SQLDB successfully! ")
             except ut.errors.DuplicateKeyError as e:
@@ -89,7 +85,5 @@ with tab2:
                 st.error(f"An error occurred: {ex}")
 
 
-with tab3:
-    st.write('summa')
 
 
