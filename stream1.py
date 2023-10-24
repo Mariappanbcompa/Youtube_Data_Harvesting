@@ -1,3 +1,4 @@
+import pandas as pd
 import streamlit as st
 import util as ut
 
@@ -40,12 +41,21 @@ with tab1:
         try:
             channel_name = channel_data['items'][0]['snippet']['title']
             st.write(f"Channel Name: {channel_name}")
-            listchennel[channel_name] = channel_data
-            st.write(ut.tab2.tab2_data(channel_data))
-            playlst = ut.Playlist.playls(ch_id,youtube)
+            #listchennel[channel_name] = channel_data
+            channel_detils = ut.channeldetail(channel_data)
+            st.write(channel_detils)
+            playlst = ut.playls(ch_id)
             st.write(playlst)
-            videodlst = ut.Playlist.videodls(playlst['Playlist_id'],youtube,dt)
+            videodlst = ut.videodls(playlst['Playlist_id'],dt)
             st.write(videodlst)
+            commentd = ut.Commentsd(videodlst['Video_id'])
+            st.write(commentd)
+            Channel_all_details = pd.DataFrame({'channel_data':channel_detils,
+                          'playlist_details':playlst,
+                          'videod_Details':videodlst,
+                          'commentdetails':commentd
+                          })
+            st.write(Channel_all_details)
         except Exception as e:
             st.warning("Kindly Provide Correct Channel ID")
 
