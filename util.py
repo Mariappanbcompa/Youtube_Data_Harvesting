@@ -12,7 +12,7 @@ from datetime import datetime as dt
 import Playlist
 import re
 
-api_key = "AIzaSyDXLPbL851GFxL-lkqMWtA8yUYABcNSu50"
+api_key = "AIzaSyCstjF-sUzZWALRQEtqNPeEy0Z5P6_UvUc"
 channel_id = "UCnz-ZXXER4jOvuED5trXfEA"
 youtube = build('youtube','v3',developerKey = api_key)
 
@@ -105,7 +105,7 @@ def playls(ch_id):
                 }
     return playlist
 
-def videodls(plylist_ids,dt):
+def videodls(plylist_ids):
 
     Video_id, playlist_Id, Video_name, Published_date, View_count, Like_count, Comments_count, Duration = [], [], [], [], [], [], [], []
     for playlist in plylist_ids:
@@ -144,7 +144,7 @@ def videodls(plylist_ids,dt):
                 View_count.extend([item['statistics']['viewCount'] for item in video_response['items']])
                 Like_count.extend([item['statistics'].get('likeCount', None) for item in video_response['items']])
                 Duration.extend([item['contentDetails']['duration'].replace('M', ':').replace('H', ':').replace('PT','').replace('S', '') for item in video_response['items']])
-                Comments_count.extend([item['statistics'].get('commentCount', None) for item in video_response['items']])
+                Comments_count.extend([int(item['statistics'].get('commentCount', 0)) for item in video_response['items']])
 
     videoDetail = {'Video_id': Video_id,
                    'playlist_Id': playlist_Id,
@@ -162,9 +162,8 @@ def videodls(plylist_ids,dt):
 
 def Commentsd(vids):
     #st.write(vids)
-    comment_id, Video_id, Comment_text, Comment_author, Comment_published_date = [], [], [], [], []
+    comment_id, Video_id, Comment_text, Comment_author, Comment_date = [], [], [], [], []
     for x in vids:
-
         token = ' '
         while token != None:
             try:
@@ -178,21 +177,24 @@ def Commentsd(vids):
                 maxResults=50,
                 pageToken=token
             )
+
             reponse = cmt_response.execute()
-            comment_id.extend([x['id'] for x in reponse['items']]),
+            comment_id.extend([x.get('id', None) for x in reponse['items']]),
             Video_id.extend([x['snippet']['videoId'] for x in reponse['items']]),
             Comment_text.extend(
-                [remove_emojis(x['snippet']['topLevelComment']['snippet']['textOriginal']) for x in reponse['items']]),
+                [remove_emojis(x['snippet']['topLevelComment']['snippet'].get('textOriginal', None)) for x in
+                 reponse['items']]),
             Comment_author.extend(
-                [x['snippet']['topLevelComment']['snippet']['authorDisplayName'] for x in reponse['items']]),
-            Comment_published_date.extend(
-                [x['snippet']['topLevelComment']['snippet']['publishedAt'] for x in reponse['items']])
+                [x['snippet']['topLevelComment']['snippet'].get('authorDisplayName', None) for x in reponse['items']]),
+            Comment_date.extend(
+                [x['snippet']['topLevelComment']['snippet'].get('publishedAt', None) for x in reponse['items']])
+
 
     cmt = {'comment_id': comment_id,
            'Video_id': Video_id,
            'Comment_text': Comment_text,
            'Comment_author': Comment_author,
-           'Comment_published_date': Comment_published_date
+           'Comment_published_date': Comment_date
            }
 
     return cmt

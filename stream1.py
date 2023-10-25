@@ -18,9 +18,12 @@ st.title('Youtube Data Harvesting Project ')
 
 with st.sidebar:
     st.header("List of Channel ID's")
+    "UCi8cCe02oSGS21lHrAcjogA"
     "UCnz-ZXXER4jOvuED5trXfEA"
-    "UCCktnahuRFYIBtNnKT5IYyg"
     "UCPIM-Ev-sEJ_aEcpDCndqUQ"
+    "UC1VT8SUJ7yvIkE4eCzXVSNA"
+    "UCNb8hHMKUSL4HigPdg2ht4A"
+    "UCCktnahuRFYIBtNnKT5IYyg"
     "UC8kFF39hsRrFfHM6-7A6APQ"
     "UCShlVe9nx6m2T4I5Nn-9dbw"
     "UCe1XwK0bvZ0kYAgPWipKt7A"
@@ -41,21 +44,24 @@ with tab1:
         try:
             channel_name = channel_data['items'][0]['snippet']['title']
             st.write(f"Channel Name: {channel_name}")
-            #listchennel[channel_name] = channel_data
+            listchennel[channel_name] = channel_data
             channel_detils = ut.channeldetail(channel_data)
             st.write(channel_detils)
             playlst = ut.playls(ch_id)
             st.write(playlst)
-            videodlst = ut.videodls(playlst['Playlist_id'],dt)
+            videodlst = ut.videodls(playlst['Playlist_id'])
+            df = pd.DataFrame(videodlst)
+            vids = df[df['Comments_count'] != 0]['Video_id']
             st.write(videodlst)
-            commentd = ut.Commentsd(videodlst['Video_id'])
+            commentd = ut.Commentsd(vids)
             st.write(commentd)
-            Channel_all_details = pd.DataFrame({'channel_data':channel_detils,
-                          'playlist_details':playlst,
-                          'videod_Details':videodlst,
-                          'commentdetails':commentd
-                          })
-            st.write(Channel_all_details)
+            # Channel_all_details = pd.DataFrame({'channel_data':channel_detils,
+            #               'playlist_details':playlst,
+            #               'videod_Details':videodlst,
+            #               'commentdetails':commentd
+            #               })
+            # st.write(Channel_all_details)
+
         except Exception as e:
             st.warning("Kindly Provide Correct Channel ID")
 
