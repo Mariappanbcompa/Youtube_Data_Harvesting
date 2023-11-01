@@ -49,8 +49,7 @@ def channeldetail(channel_data):
 
 
 def mconnect():
-        uri1  = "mongodb+srv://Marii:Password@cluster0.okcsmig.mongodb.net/?retryWrites=true&w=majority"
-        uri = "mongodb://localhost:27017"
+        uri = "mongodb+srv://Marii:Password@cluster0.okcsmig.mongodb.net/?retryWrites=true&w=majority"
         client = MongoClient(uri, server_api=ServerApi('1'))
         return client
 
@@ -148,7 +147,7 @@ def videodls(plylist_ids):
                     [int(item['statistics'].get('commentCount', 0)) for item in video_response['items']])
                 Duration.extend([item['contentDetails']['duration'].replace('M', ':').replace('H', ':')
                                 .replace('PT','').replace('S', '') if len(item['contentDetails']['duration']) > 5 else
-                                 item['contentDetails']['duration'].replace('M', '').replace('PT', '').replace('S', '')
+                                 item['contentDetails']['duration'].replace('M', '').replace('PT', '')
                                  for item in video_response['items']])
 
 
