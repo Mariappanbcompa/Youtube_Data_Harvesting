@@ -142,7 +142,7 @@ def videodls(plylist_ids):
                 Published_date.extend([dt.strptime(item['snippet']['publishedAt'].replace('T', ' ').replace('Z', ''),
                                                    "%Y-%m-%d %H:%M:%S").strftime("%d/%m/%Y %I:%M %p")
                                        for item in video_response['items']])
-                View_count.extend([item['statistics']['viewCount'] for item in video_response['items']])
+                View_count.extend([item['statistics'].get('viewCount',0) for item in video_response['items']])
                 Like_count.extend([item['statistics'].get('likeCount', 0) for item in video_response['items']])
                 Comments_count.extend(
                     [int(item['statistics'].get('commentCount', 0)) for item in video_response['items']])
@@ -167,7 +167,6 @@ def videodls(plylist_ids):
 
 
 def Commentsd(vids):
-    #st.write(vids)
     comment_id, Video_id, Comment_text, Comment_author, Comment_date = [], [], [], [], []
     for x in vids:
         token = ' '
@@ -184,19 +183,25 @@ def Commentsd(vids):
                 pageToken=token
             )
 
-            reponse = cmt_response.execute()
-            comment_id.extend([x.get('id', None) for x in reponse['items']]),
-            Video_id.extend([x['snippet']['videoId'] for x in reponse['items']]),
-            Comment_text.extend(
-                [remove_emojis(x['snippet']['topLevelComment']['snippet'].get('textOriginal', None)) for x in
-                 reponse['items']]),
-            Comment_author.extend(
-                [x['snippet']['topLevelComment']['snippet'].get('authorDisplayName', None) for x in reponse['items']]),
-            Comment_date.extend(
-                [dt.strptime(x['snippet']['topLevelComment']['snippet'].get('publishedAt', None)
-                .replace('T', ' ').replace('Z', ''),"%Y-%m-%d %H:%M:%S").strftime("%d/%m/%Y %I:%M %p")
-                for x in reponse['items']]
-                                )
+            try:
+                reponse = cmt_response.execute()
+            except:
+                reponse = None
+            if not reponse:
+                None
+            else:
+                comment_id.extend([x.get('id', None) for x in reponse['items']]),
+                Video_id.extend([x['snippet']['videoId'] for x in reponse['items']]),
+                Comment_text.extend(
+                    [remove_emojis(x['snippet']['topLevelComment']['snippet'].get('textOriginal', None)) for x in
+                     reponse['items']]),
+                Comment_author.extend(
+                    [x['snippet']['topLevelComment']['snippet'].get('authorDisplayName', None) for x in reponse['items']]),
+                Comment_date.extend(
+                    [dt.strptime(x['snippet']['topLevelComment']['snippet'].get('publishedAt', None)
+                    .replace('T', ' ').replace('Z', ''),"%Y-%m-%d %H:%M:%S").strftime("%d/%m/%Y %I:%M %p")
+                    for x in reponse['items']]
+                                    )
 
 
     cmt = {'Comment_id': comment_id,
