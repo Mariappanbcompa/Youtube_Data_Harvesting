@@ -1,14 +1,9 @@
-import streamlit as st
-import numpy as np
 from googleapiclient.discovery import build as build
-import pandas as pd
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import mysql.connector
-from pymongo import errors
-import testSQL as ts
+import pySQL_load as ts
 from datetime import datetime as dt
-import Playlist
 import re
 
 api1 = "AIzaSyClj6OEqZ0jR8-Lf8yFuEQI-1I3WA-U7yo"
@@ -26,25 +21,6 @@ mydb = mysql.connector.connect(
 #print(mydb)
 mycursor = mydb.cursor(buffered=True)
 
-
-def channeldata(ch):
-
-    channel_id = ch
-
-    response = youtube.channels().list(
-    id=channel_id,
-    part='snippet,statistics,contentDetails')
-    channel_data= response.execute()
-    return channel_data
-
-def channeldetail(channel_data):
-    data = dict(ChanneID=channel_data['items'][0]['id'],
-                channel_name=channel_data['items'][0]['snippet']['title'],
-                SubscriberCount=channel_data['items'][0]['statistics']['subscriberCount'],
-                ViewCount=channel_data['items'][0]['statistics']['viewCount'],
-                VideoCount=channel_data['items'][0]['statistics']['videoCount']
-                )
-    return data
 
 
 def mconnect():
@@ -76,6 +52,28 @@ def remove_emojis(data):
                       "]+", re.UNICODE)
     return re.sub(emoj, '', data)
 
+
+
+
+
+def channeldata(ch):
+
+    channel_id = ch
+
+    response = youtube.channels().list(
+    id=channel_id,
+    part='snippet,statistics,contentDetails')
+    channel_data= response.execute()
+    return channel_data
+
+def channeldetail(channel_data):
+    data = dict(ChanneID=channel_data['items'][0]['id'],
+                channel_name=channel_data['items'][0]['snippet']['title'],
+                SubscriberCount=channel_data['items'][0]['statistics']['subscriberCount'],
+                ViewCount=channel_data['items'][0]['statistics']['viewCount'],
+                VideoCount=channel_data['items'][0]['statistics']['videoCount']
+                )
+    return data
 
 
 def playls(ch_id):
