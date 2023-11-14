@@ -6,7 +6,6 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import mysql.connector
 from pymongo import errors
-import tab2
 import testSQL as ts
 from datetime import datetime as dt
 import Playlist
