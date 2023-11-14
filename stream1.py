@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 import util as ut
-
+from datetime import timedelta
 
 dt = ut.dt
 youtube = ut.youtube
@@ -17,21 +17,28 @@ mycursor.execute("Use youtubedb")
 st.title('Youtube Data Harvesting Project ')
 
 with st.sidebar:
+
     st.header("List of Channel ID's")
-    "UCi8cCe02oSGS21lHrAcjogA"
-    "UCjC8sqwzUme0LDJ2CeCx2Rw"
-    "UCwVEhEzsjLym_u1he4XWFkg"
-    "UC1VT8SUJ7yvIkE4eCzXVSNA"
-    "UCNb8hHMKUSL4HigPdg2ht4A"
-    "UC7LW0lREbuLEdGw37V4w7rQ"
-    "UC8kFF39hsRrFfHM6-7A6APQ"
-    "UCEdNYjOHEiwA1kiPoI5igKw"
-    "UCY7Qlh9y1H8zuTFoFmkDwpw"
-    "UCLSxqNl7wztWyTuI6eWS7VA"
-    "UCT_SeKYIcxOx4DHQmlg_jEQ"
-    "UClM7fatYZhgbMqpqyqHmKAw"
-    "UCIqFiFqyXBegTCECeAc9O9Q"
-    "UCfw5bPQzVXGt5swIOWVQz8Q"
+    channel_lst = [
+        "UCi8cCe02oSGS21lHrAcjogA",
+        "UCjC8sqwzUme0LDJ2CeCx2Rw",
+        "UCwVEhEzsjLym_u1he4XWFkg",
+        "UC1VT8SUJ7yvIkE4eCzXVSNA",
+        "UCNb8hHMKUSL4HigPdg2ht4A",
+        "UC7LW0lREbuLEdGw37V4w7rQ",
+        "UC8kFF39hsRrFfHM6-7A6APQ",
+        "UCEdNYjOHEiwA1kiPoI5igKw",
+        "UCY7Qlh9y1H8zuTFoFmkDwpw",
+        "UCLSxqNl7wztWyTuI6eWS7VA",
+        "UCT_SeKYIcxOx4DHQmlg_jEQ",
+        "UClM7fatYZhgbMqpqyqHmKAw",
+        "UCIqFiFqyXBegTCECeAc9O9Q",
+        "UCfw5bPQzVXGt5swIOWVQz8Q"
+    ]
+    ls = [x['_id'] for x in records.find({"_id": {'$ne': 2}})]
+    dif = list(set(channel_lst).difference(set(ls)))
+    st.dataframe(pd.DataFrame({'Channel List': dif}))
+
 
 
 
@@ -77,7 +84,7 @@ with tab1:
 
 with tab2:
 
-    mycursor.execute("select ChannelID from Channel;")
+    mycursor.execute("select Channel_id from Channel;")
     result = mycursor.fetchall()
     sqlls = [x[0] for x in result]
     dd = records.find({}, {"_id": True, })
@@ -104,4 +111,38 @@ with tab2:
 
 
 with tab3:
-    'ss'
+    option = st.selectbox(
+    'Kindly select the query from the below list : ',
+    ('Question_1',
+    'Question_2',
+    'Question_3',
+    'Question_4',
+    'Question_5',
+    'Question_6',
+    'Question_7',
+    'Question_8',
+    'Question_9',
+    'Question_10'
+    ),   index=None,
+   placeholder="Select from listed query...",)
+
+    if  option == None :
+        pass
+    else:
+        mycursor.execute(f"select * from questions_stramlitproject where Serialno = '{option}';")
+        result = mycursor.fetchall()
+        st.write('Question is :', result[0][1])
+        st.subheader('SQL Query')
+        st.code(result[0][2])
+        st.subheader('Result:')
+        mycursor.execute(result[0][2])
+        result1 = mycursor.fetchall()
+        columns = [desc[0] for desc in mycursor.description]
+        df = pd.DataFrame(result1, columns=columns)
+        if 'Average_Duration' in df.columns:
+            df['Average_Duration'] = df['Average_Duration'].astype(str)
+        else:
+            pass
+        st.dataframe(df)
+
+

@@ -1,4 +1,5 @@
 import streamlit as st
+from datetime import datetime
 import mysql.connector
 mydb = mysql.connector.connect(
   host="localhost",
@@ -10,7 +11,6 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor(buffered=True)
 
 def datefor(cdate):
-    from datetime import datetime
     date_obj = datetime.strptime(cdate, '%d/%m/%Y %I:%M %p')
     formatted_date = date_obj.strftime('%Y-%m-%d %H:%M:%S')
     return formatted_date
@@ -37,12 +37,12 @@ def loadtoSQL(channel,mydb,mycursor):
     mycursor.executemany(insert_query, rows)    
 
     #Video Details load
-  
     data2 = channel['Video_details']
     table_name = 'video'
-    rows = [(data2['Video_id'][i], data2['Playlist_id'][i], data2['Video_name'][i], data2['Published_date'][i],
-             int(data2['View_count'][i]), int(data2['Like_count'][i]), int(data2['Comment_count'][i]),
-             data2['Duration'][i]) for i in range(len(data2['Video_id']))]
+    rows = [(data2['Video_id'][i], data2['Playlist_id'][i], data2['Video_name'][i],
+             datetime.strptime(data2['Published_date'][i], '%d/%m/%Y %I:%M %p'), int(data2['View_count'][i]),
+             int(data2['Like_count'][i]), int(data2['Comment_count'][i]), data2['Duration'][i]) for i in
+            range(len(data2['Video_id']))]
 
     insert_query = f"INSERT INTO {table_name} (Video_id, Playlist_id, Video_name, Published_date, View_count, Like_count, Comment_count, Duration) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"
     mycursor.executemany(insert_query, rows) 
@@ -54,7 +54,7 @@ def loadtoSQL(channel,mydb,mycursor):
     rows = [(data3['Comment_id'][i], data3['Video_id'][i], data3['Comment_text'][i], data3['Comment_author'][i],
              datefr(data3['Comment_date'][i])) for i in range(len(data3['Comment_id']))]
 
-    insert_query = f"INSERT INTO {table_name} (Comment_id, Video_id, Comment_text, Comment_author,Comment_date) VALUES (%s, %s, %s, %s, %s);"
+    insert_query = f"INSERT INTO {table_name} (Comment_id, VideoID, Comment_text, Comment_author,Comment_date) VALUES (%s, %s, %s, %s, %s);"
     mycursor.executemany(insert_query, rows)
     mydb.commit()
     
